@@ -3,7 +3,43 @@ title: "Data Import Script"
 format: html
 ---
 
-```{r packages}
-
+```{r}
+library(rvest)
+library(tibble)
+library(stringr)
+library(tidyverse)
 ```
 
+## Scraping Country Names
+
+```{r}
+url <- "https://www.numbeo.com/food-prices/"
+
+##scrape country names
+country_names <-
+  read_html(url)|>
+  html_elements("table.related_links")|>
+  html_elements("a")|>
+  html_text2()
+
+##scrape country URLs
+country_links <-
+  read_html(url)|>
+  html_elements("table.related_links")|>
+  html_elements("a")|>
+  html_attr("href")|>
+  url_absolute(base=url)
+  
+countries <- tibble(
+  country = country_names,
+  url = country_links
+)
+
+countries
+```
+
+## Scraping food price data from each country
+
+```{r}
+
+```
