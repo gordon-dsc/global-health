@@ -8,6 +8,10 @@ library(rvest)
 library(tibble)
 library(stringr)
 library(tidyverse)
+library(httr2)
+library(httr)
+library(purrr)
+library(dplyr)
 ```
 
 ## Scraping Country Names
@@ -30,6 +34,9 @@ country_links <-
   html_attr("href")|>
   url_absolute(base=url)
   
+## remove "s" in url links
+country_links <- str_replace(country_links, "^https", "http")
+
 countries <- tibble(
   country = country_names,
   url = country_links
@@ -41,5 +48,66 @@ countries
 ## Scraping food price data from each country
 
 ```{r}
+get_food_prices <- function(country_url) {
+  Sys.sleep(time = 30)
+  page <- read_html(country_url)
+  
+  items <- page|>
+    html_elements("tr.tr_standard, tr.tr_highlighted")|>
+    html_elements("td:nth-child(1)")|>
+    html_text2()
+  
+  prices <- page|>
+    html_elements("tr.tr_standard, tr.tr_highlighted")|>
+    html_elements("td:nth-child(2)")|>
+    html_text2()|>
+    str_remove("\\$")|>
+    str_trim()
+  
+  tibble(
+    item = items,
+    price_usd = prices
+  )
+}
 
+# food_data_all <- countries |>
+#   mutate(food_data = map(url, get_food_prices, .progress = TRUE)) |>
+#   unnest(food_data)
+
+food_data <- map(countries$url, get_food_prices, .progress = TRUE)
+
+food_data_all
+```
+
+## API
+
+```{r}
+base_url <- "https://www.numbeo.com/api"
+
+get_food_prices <- function(country) {
+  Sys.sleep(1)
+
+  response <- request(base_url) |>
+  req_url_path_append("country_prices") |>
+  req_url_query(api_key = "i987lirw7h13dn", country = country, currency = "USD") |>
+  req_perform()
+  food_prices_list <- resp_body_json(response)
+  return(as_tibble(food_prices_list))
+}
+
+countries_with_prices <- map(countries$country, get_food_prices)
+combined_food_prices <- bind_rows(countries_with_prices, .id = "country")
+head(combined_food_prices)
+```
+
+## Rectangling
+
+```{r}
+food_prices <- tibble(combined_food_prices)
+
+food_prices <- food_prices|>
+  unnest_wider(prices)|> 
+  select(name, average_price, item_name)|>
+  filter(str_detect(item_name, "Markets|Restaurants"))|>
+  mutate(average_price = round(as.numeric(average_price), 2))
 ```
