@@ -21,7 +21,6 @@ write_csv(obesity_income, 'obesity_income.csv')
 ## Plotting the Relationship between Obesity and Income
 
 ```{r}
-
 ggplot(obesity_income, aes(x = `Median Income 2020`, y = `Obesity Rate`)) +
   geom_point() +
   labs(
@@ -29,7 +28,32 @@ ggplot(obesity_income, aes(x = `Median Income 2020`, y = `Obesity Rate`)) +
     x = "Median Income 2020 (USD)",
     y = "Obesity Rate (%)"
   ) +
-  geom_smooth(method = "lm", se = FALSE, color = "red") +
-  scale_y_continuous(labels = scales::percent_format(scale = 1), limits = c(0, 100))
+  geom_smooth(method = "lm", se = FALSE, color = "red")
+```
 
+## Join Obesity and Market Price Data
+
+```{r}
+food_price <- food_price|>
+  select(Country, average_price, item_name)
+
+obesity_price <- obesity|>
+  inner_join(food_price, by="Country")
+write_csv(obesity_price, 'obesity_price.csv')
+```
+
+## Plot the Relationship Obesity Rate and Market Affordability
+
+```{r}
+country_obesity_price <- obesity_price|>
+  group_by(Country)|>
+  summarize(avg_price = round(mean(average_price, na.rm = TRUE), 2),
+            avg_obesity = mean(`Obesity Rate`, na.rm = TRUE))
+
+# Create the plot
+ggplot(country_obesity_price, aes(x = avg_price, y = avg_obesity)) +
+  geom_point() +  # Scatter plot
+  labs(title = "Obesity Rate vs. Average Market Food Prices by Country",
+       x = "Average Market Food Price (USD)",
+       y = "Average Obesity Rate (%)")
 ```

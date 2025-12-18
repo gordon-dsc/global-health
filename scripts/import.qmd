@@ -109,11 +109,11 @@ food_prices <- tibble(combined_food_prices)
 
 food_prices <- food_prices|>
   unnest_wider(prices)|> 
-  select(name, average_price, item_name)|>
+  rename(Country = name)|>
+  select(Country, average_price, item_name)|>
   filter(str_detect(item_name, "Markets|Restaurants"))|>
-  mutate(average_price = round(as.numeric(average_price), 2))|>
-  rename(Country = name)
-write.csv(food_prices,"food_price.csv")
+  mutate(average_price = round(as.numeric(average_price), 2))
+write.csv(food_prices,"food_prices.csv")
 ```
 
 ## Scraping Income by Countries
