@@ -10,15 +10,63 @@ library(rvest)
 library(tibble)
 ```
 
+## Rectangling and Cleaning Market Prices
+
+```{r}
+load("../data/imported_data/raw_food_prices.rds")
+food_prices <- tibble(combined_food_prices)
+
+food_prices <- food_prices|>
+  unnest_wider(prices)|> 
+  rename(Country = name)|>
+  select(Country, average_price, item_name)|>
+  filter(str_detect(item_name, "Markets|Restaurants"))|>
+  mutate(average_price = round(as.numeric(average_price), 2))
+save(food_prices, file = "../data/cleaned_data/cleaned_food_prices.rds")
+```
+
+## Cleaning Income Data
+
+```{r}
+load("../data/imported_data/raw_income.rds")
+income_table_cleaned <- income_table |>
+  select(-1)  # Use select() to remove the first column
+
+# Assign proper column names
+colnames(income_table_cleaned) <- c("Country", "Median Income 2020", "Mean Income 2020", "GDP per Capita 2020")
+
+income_table_cleaned$`Median Income 2020` <- as.numeric(gsub("[$,]", "", income_table_cleaned$`Median Income 2020`))
+income_table_cleaned$`Mean Income 2020` <- as.numeric(gsub("[$,]", "", income_table_cleaned$`Mean Income 2020`))
+income_table_cleaned$`GDP per Capita 2020` <- as.numeric(gsub("[$,]", "", income_table_cleaned$`GDP per Capita 2020`))
+
+save(income_table_cleaned, file = "../data/cleaned_data/cleaned_income_table.rds")
+```
+
+## Cleaning Obesity Rate Data
+
+```{r}
+load("../data/imported_data/raw_obesity.rds")
+obesity_table_cleaned <- obesity_table|>
+  select(-1)
+
+colnames(obesity_table_cleaned) <-c("Country","Obesity Rate", "Male Obesity Rate", "Female Obesity Rate")
+
+obesity_table_cleaned$'Obesity Rate'<- as.numeric(gsub("[,%]", "", obesity_table_cleaned$'Obesity Rate'))
+obesity_table_cleaned$'Male Obesity Rate'<- as.numeric(gsub("[,%]", "", obesity_table_cleaned$'Male Obesity Rate'))
+obesity_table_cleaned$'Female Obesity Rate'<- as.numeric(gsub("[,%]", "", obesity_table_cleaned$'Female Obesity Rate'))
+                                                       
+save(obesity_table_cleaned, file = "../data/cleaned_data/cleaned_obesity_table.rds")
+```
+
 ## Join Obesity and Income Data
 
 ```{r}
-obesity_income <- obesity|>
+obesity_income <- obesity_table_cleaned|>
   inner_join(country_income, by="Country")
-write_csv(obesity_income, 'obesity_income.csv')
+save(obesity_income, file = "../data/cleaned_data/obesity_income.rds")
 ```
 
-## Plotting the Relationship between Obesity and Income
+### Plotting the Relationship between Obesity and Income
 
 ```{r}
 ggplot(obesity_income, aes(x = `Median Income 2020`, y = `Obesity Rate`)) +
@@ -37,12 +85,12 @@ ggplot(obesity_income, aes(x = `Median Income 2020`, y = `Obesity Rate`)) +
 food_price <- food_price|>
   select(Country, average_price, item_name)
 
-obesity_price <- obesity|>
+obesity_price <- obesity_table_cleaned|>
   inner_join(food_price, by="Country")
-write_csv(obesity_price, 'obesity_price.csv')
+save(obesity_price, file = "../data/cleaned_data/obesity_price.rds")
 ```
 
-## Plot the Relationship Obesity Rate and Market Affordability
+### Plotting the Relationship between Obesity and Market Affordability
 
 ```{r}
 country_obesity_price <- obesity_price|>
@@ -56,4 +104,12 @@ ggplot(country_obesity_price, aes(x = avg_price, y = avg_obesity)) +
   labs(title = "Obesity Rate vs. Average Market Food Prices by Country",
        x = "Average Market Food Price (USD)",
        y = "Average Obesity Rate (%)")
+```
+
+## Join Obesity Rate, Income and Market Affordability
+
+```{r}
+obesity_income_price <- obesity_price|>
+  inner_join(country_income, by = "Country")
+save(obesity_income_price, file = "../output/obesity_income_price.rds")
 ```

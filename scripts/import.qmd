@@ -81,6 +81,8 @@ food_data <- map(countries$url, get_food_prices, .progress = TRUE)
 food_data_all
 ```
 
+Below is the code for retrieving Market/Restaurant prices using Numebeo API.
+
 ## Retrieve Market/Restaurant Price Data Using Numbeo API
 
 ```{r}
@@ -102,18 +104,10 @@ combined_food_prices <- bind_rows(countries_with_prices, .id = "country")
 head(combined_food_prices)
 ```
 
-## Rectangling
+### Writing nested tibble to .rds file
 
 ```{r}
-food_prices <- tibble(combined_food_prices)
-
-food_prices <- food_prices|>
-  unnest_wider(prices)|> 
-  rename(Country = name)|>
-  select(Country, average_price, item_name)|>
-  filter(str_detect(item_name, "Markets|Restaurants"))|>
-  mutate(average_price = round(as.numeric(average_price), 2))
-write.csv(food_prices,"food_prices.csv")
+save(combined_food_prices, file = "../data/imported_data/raw_food_prices.rds")
 ```
 
 ## Scraping Income by Countries
@@ -127,19 +121,12 @@ income <- read_html(url_2) |>
 
 income_table <- income[[1]]
 str(income_table)
+```
 
-income_table_cleaned <- income_table |>
-  select(-1)  # Use select() to remove the first column
+### writing income data to .rds file
 
-# Assign proper column names
-colnames(income_table_cleaned) <- c("Country", "Median Income 2020", "Mean Income 2020", "GDP per Capita 2020")
-
-income_table_cleaned$`Median Income 2020` <- as.numeric(gsub("[$,]", "", income_table_cleaned$`Median Income 2020`))
-income_table_cleaned$`Mean Income 2020` <- as.numeric(gsub("[$,]", "", income_table_cleaned$`Mean Income 2020`))
-income_table_cleaned$`GDP per Capita 2020` <- as.numeric(gsub("[$,]", "", income_table_cleaned$`GDP per Capita 2020`))
-
-income_tibble <- as_tibble(income_table_cleaned)
-write_csv(income_tibble, "country_income.csv")
+```{r}
+save(income_table, file = "../data/imported_data/raw_income.rds")
 ```
 
 ## Scraping Obesity Data
@@ -152,17 +139,10 @@ obesity <- read_html(url_3)|>
 
 obesity_table <- obesity[[1]]
 str(obesity_table)
-obesity_table_cleaned <- obesity_table|>
-  select(-1)
+```
 
-colnames(obesity_table_cleaned) <-c("Country","Obesity Rate", "Male Obesity Rate", "Female Obesity Rate")
+### writing obesity rate data to .rds file
 
-obesity_table_cleaned$'Obesity Rate'<- as.numeric(gsub("[,%]", "", obesity_table_cleaned$'Obesity Rate'))
-obesity_table_cleaned$'Male Obesity Rate'<- as.numeric(gsub("[,%]", "", obesity_table_cleaned$'Male Obesity Rate'))
-obesity_table_cleaned$'Female Obesity Rate'<- as.numeric(gsub("[,%]", "", obesity_table_cleaned$'Female Obesity Rate'))
-                                                       
-
-obesity_tibble <- as_tibble(obesity_table_cleaned)
-write_csv(obesity_tibble, "obesity.csv")
-
+```{r}
+save(obesity_table, file = "../data/imported_data/raw_obesity.rds")
 ```
