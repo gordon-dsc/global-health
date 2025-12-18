@@ -120,7 +120,7 @@ food_prices <- food_prices|>
 url_2 <- "https://worldpopulationreview.com/country-rankings/median-income-by-country"
 
 income <- read_html(url_2) |>
-  html_elements(".wpr-table") %>%
+  html_elements(".wpr-table")|>
   html_table(fill = TRUE)
 
 income_table <- income[[1]]
@@ -132,4 +132,22 @@ income_table_cleaned <- income_table |>
 # Assign proper column names
 colnames(income_table_cleaned) <- c("Country", "Median Income 2020", "Mean Income 2020", "GDP per Capita 2020")
 income_tibble <- as_tibble(income_table_cleaned)
+```
+
+## Scraping Obesity Data
+
+```{r}
+url_3 <- "https://worldpopulationreview.com/country-rankings/obesity-rates-by-country#obesity-by-country"
+
+obesity <- read_html(url_3)|>
+  html_table()
+
+obesity_table <- obesity[[1]]
+str(obesity_table)
+obesity_table_cleaned <- obesity_table|>
+  select(-1)
+
+colnames(obesity_table_cleaned) <-c("Country","Obesity Rate", "Male Obesity Rate", "Female Obesity Rate")
+obesity_tibble <- as_tibble(obesity_table_cleaned)
+write_csv(obesity_tibble, "obesity.csv")
 ```
