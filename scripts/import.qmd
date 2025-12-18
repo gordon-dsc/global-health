@@ -16,6 +16,8 @@ library(dplyr)
 
 ## Scraping Country Names
 
+This code was originally intended to scrape country names and food prices from Numbeo. Although it was successfully collected the list of countries, I wasn't able to scrape the detailed food price data because the website began blocking the request. I switched to using Numbeo's API to obtain market/restaurant price data instead. Fortunately, the country names I collected from the original scraping code were still useful later in the project, especially when mapping price across all countries.
+
 ```{r}
 url <- "https://www.numbeo.com/food-prices/"
 
@@ -45,7 +47,7 @@ countries <- tibble(
 countries
 ```
 
-## Scraping food price data from each country
+## Scraping Food Price Data From Each Country
 
 ```{r}
 get_food_prices <- function(country_url) {
@@ -79,7 +81,7 @@ food_data <- map(countries$url, get_food_prices, .progress = TRUE)
 food_data_all
 ```
 
-## API
+## Retrieve Market/Restaurant Price Data Using Numbeo API
 
 ```{r}
 base_url <- "https://www.numbeo.com/api"
@@ -110,4 +112,24 @@ food_prices <- food_prices|>
   select(name, average_price, item_name)|>
   filter(str_detect(item_name, "Markets|Restaurants"))|>
   mutate(average_price = round(as.numeric(average_price), 2))
+```
+
+## Scraping Income by Countries
+
+```{r}
+url_2 <- "https://worldpopulationreview.com/country-rankings/median-income-by-country"
+
+income <- read_html(url_2) |>
+  html_elements(".wpr-table") %>%
+  html_table(fill = TRUE)
+
+income_table <- income[[1]]
+str(income_table)
+
+income_table_cleaned <- income_table |>
+  select(-1)  # Use select() to remove the first column
+
+# Assign proper column names
+colnames(income_table_cleaned) <- c("Country", "Median Income 2020", "Mean Income 2020", "GDP per Capita 2020")
+income_tibble <- as_tibble(income_table_cleaned)
 ```
