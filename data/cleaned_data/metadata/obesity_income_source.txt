@@ -1,0 +1,2 @@
+Data File: obesity_table_cleaned, country_income
+Cleaning Script: scripts/cleaning.qmd

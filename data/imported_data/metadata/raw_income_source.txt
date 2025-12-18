@@ -1,0 +1,5 @@
+File Name: income_table
+Source: scraped from World Population Review
+URL : "https://worldpopulationreview.com/country-rankings/median-income-by-country"
+Date Accessed: 2025-12-18
+Import Script: scripts/import.qmd

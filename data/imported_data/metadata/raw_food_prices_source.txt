@@ -1,0 +1,5 @@
+File Name: combined_food_prices
+Source: using API from Numbeo
+URL : "https://www.numbeo.com/api"
+Date Accessed: 2025-12-18
+Import Script: scripts/import.qmd

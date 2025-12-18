@@ -1,0 +1,12 @@
+This file shows all the obesity rate with income and market afforadability in different countries.
+
+Column name: variable type: description
+  Country: chr(text) : country names
+  Obesity Rate: num(continuous): obesity rate in percentage
+  Male Obesity Rate: num(countinous): male obesity rate in percentage
+  Female Obesity Rate: num(countinous): female obesity rate in percentage
+  average_price: num(countinous): average price for each items in item_name column
+  item_name: chr(text): name of the market/restaurant foods or goods
+  Median Income 2020: num(countinous): median income in dollar
+  Mean Income 2020: num(countinous): mean income in dollar
+  GDP per Capita 2020: num(countinous): GDP per capita

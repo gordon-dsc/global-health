@@ -1,0 +1,2 @@
+Data File: income_table_cleaned
+Cleaning Script: scripts/cleaning.qmd
