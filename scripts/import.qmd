@@ -111,7 +111,9 @@ food_prices <- food_prices|>
   unnest_wider(prices)|> 
   select(name, average_price, item_name)|>
   filter(str_detect(item_name, "Markets|Restaurants"))|>
-  mutate(average_price = round(as.numeric(average_price), 2))
+  mutate(average_price = round(as.numeric(average_price), 2))|>
+  rename(Country = name)
+write.csv(food_prices,"food_price.csv")
 ```
 
 ## Scraping Income by Countries
@@ -131,7 +133,13 @@ income_table_cleaned <- income_table |>
 
 # Assign proper column names
 colnames(income_table_cleaned) <- c("Country", "Median Income 2020", "Mean Income 2020", "GDP per Capita 2020")
+
+income_table_cleaned$`Median Income 2020` <- as.numeric(gsub("[$,]", "", income_table_cleaned$`Median Income 2020`))
+income_table_cleaned$`Mean Income 2020` <- as.numeric(gsub("[$,]", "", income_table_cleaned$`Mean Income 2020`))
+income_table_cleaned$`GDP per Capita 2020` <- as.numeric(gsub("[$,]", "", income_table_cleaned$`GDP per Capita 2020`))
+
 income_tibble <- as_tibble(income_table_cleaned)
+write_csv(income_tibble, "country_income.csv")
 ```
 
 ## Scraping Obesity Data
@@ -148,6 +156,13 @@ obesity_table_cleaned <- obesity_table|>
   select(-1)
 
 colnames(obesity_table_cleaned) <-c("Country","Obesity Rate", "Male Obesity Rate", "Female Obesity Rate")
+
+obesity_table_cleaned$'Obesity Rate'<- as.numeric(gsub("[,%]", "", obesity_table_cleaned$'Obesity Rate'))
+obesity_table_cleaned$'Male Obesity Rate'<- as.numeric(gsub("[,%]", "", obesity_table_cleaned$'Male Obesity Rate'))
+obesity_table_cleaned$'Female Obesity Rate'<- as.numeric(gsub("[,%]", "", obesity_table_cleaned$'Female Obesity Rate'))
+                                                       
+
 obesity_tibble <- as_tibble(obesity_table_cleaned)
 write_csv(obesity_tibble, "obesity.csv")
+
 ```

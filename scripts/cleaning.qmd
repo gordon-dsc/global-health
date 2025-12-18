@@ -3,6 +3,33 @@ title: "Data Cleaning Script"
 format: html
 ---
 
-```{r packages}
+```{r}
+library(tidyverse)
+library(httr)
+library(rvest)
+library(tibble)
+```
+
+## Join Obesity and Income Data
+
+```{r}
+obesity_income <- obesity|>
+  inner_join(country_income, by="Country")
+write_csv(obesity_income, 'obesity_income.csv')
+```
+
+## Plotting the Relationship between Obesity and Income
+
+```{r}
+
+ggplot(obesity_income, aes(x = `Median Income 2020`, y = `Obesity Rate`)) +
+  geom_point() +
+  labs(
+    title = "Obesity Rate vs. Median Income 2020 by Country",
+    x = "Median Income 2020 (USD)",
+    y = "Obesity Rate (%)"
+  ) +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  scale_y_continuous(labels = scales::percent_format(scale = 1), limits = c(0, 100))
 
 ```
