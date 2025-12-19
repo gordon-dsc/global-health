@@ -104,12 +104,6 @@ combined_food_prices <- bind_rows(countries_with_prices, .id = "country")
 head(combined_food_prices)
 ```
 
-### Writing nested tibble to .rds file
-
-```{r}
-save(combined_food_prices, file = "../data/imported_data/raw_food_prices.rds")
-```
-
 ## Scraping Income by Countries
 
 ```{r}
@@ -123,12 +117,6 @@ income_table <- income[[1]]
 str(income_table)
 ```
 
-### writing income data to .rds file
-
-```{r}
-save(income_table, file = "../data/imported_data/raw_income.rds")
-```
-
 ## Scraping Obesity Data
 
 ```{r}
@@ -139,10 +127,4 @@ obesity <- read_html(url_3)|>
 
 obesity_table <- obesity[[1]]
 str(obesity_table)
-```
-
-### writing obesity rate data to .rds file
-
-```{r}
-save(obesity_table, file = "../data/imported_data/raw_obesity.rds")
 ```

@@ -22,7 +22,6 @@ food_prices <- food_prices|>
   select(Country, average_price, item_name)|>
   filter(str_detect(item_name, "Markets|Restaurants"))|>
   mutate(average_price = round(as.numeric(average_price), 2))
-save(food_prices, file = "../data/cleaned_data/cleaned_food_prices.rds")
 ```
 
 ## Cleaning Income Data
@@ -38,8 +37,6 @@ colnames(income_table_cleaned) <- c("Country", "Median Income 2020", "Mean Incom
 income_table_cleaned$`Median Income 2020` <- as.numeric(gsub("[$,]", "", income_table_cleaned$`Median Income 2020`))
 income_table_cleaned$`Mean Income 2020` <- as.numeric(gsub("[$,]", "", income_table_cleaned$`Mean Income 2020`))
 income_table_cleaned$`GDP per Capita 2020` <- as.numeric(gsub("[$,]", "", income_table_cleaned$`GDP per Capita 2020`))
-
-save(income_table_cleaned, file = "../data/cleaned_data/cleaned_income_table.rds")
 ```
 
 ## Cleaning Obesity Rate Data
@@ -54,8 +51,6 @@ colnames(obesity_table_cleaned) <-c("Country","Obesity Rate", "Male Obesity Rate
 obesity_table_cleaned$'Obesity Rate'<- as.numeric(gsub("[,%]", "", obesity_table_cleaned$'Obesity Rate'))
 obesity_table_cleaned$'Male Obesity Rate'<- as.numeric(gsub("[,%]", "", obesity_table_cleaned$'Male Obesity Rate'))
 obesity_table_cleaned$'Female Obesity Rate'<- as.numeric(gsub("[,%]", "", obesity_table_cleaned$'Female Obesity Rate'))
-                                                       
-save(obesity_table_cleaned, file = "../data/cleaned_data/cleaned_obesity_table.rds")
 ```
 
 ## Join Obesity and Income Data
@@ -63,7 +58,6 @@ save(obesity_table_cleaned, file = "../data/cleaned_data/cleaned_obesity_table.r
 ```{r}
 obesity_income <- obesity_table_cleaned|>
   inner_join(country_income, by="Country")
-save(obesity_income, file = "../data/cleaned_data/obesity_income.rds")
 ```
 
 ### Plotting the Relationship between Obesity and Income
@@ -87,7 +81,6 @@ food_price <- food_price|>
 
 obesity_price <- obesity_table_cleaned|>
   inner_join(food_price, by="Country")
-save(obesity_price, file = "../data/cleaned_data/obesity_price.rds")
 ```
 
 ### Plotting the Relationship between Obesity and Market Affordability
@@ -111,5 +104,4 @@ ggplot(country_obesity_price, aes(x = avg_price, y = avg_obesity)) +
 ```{r}
 obesity_income_price <- obesity_price|>
   inner_join(country_income, by = "Country")
-save(obesity_income_price, file = "../output/obesity_income_price.rds")
 ```

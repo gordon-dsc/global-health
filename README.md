@@ -32,8 +32,6 @@ The following directory tree (based on TIER Protocol 4.0) provides a simple visu
 
                 -   source.txt
 
-                -   codebook.txt
-
     -   scripts/
 
         -   import.qmd
@@ -43,6 +41,8 @@ The following directory tree (based on TIER Protocol 4.0) provides a simple visu
     -   output/
 
         -   final_data.csv
+        -   metadata/
+            -   codebook.txt
 
 ### README.md
 
