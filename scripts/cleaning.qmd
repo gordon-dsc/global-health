@@ -12,8 +12,10 @@ library(tibble)
 
 ## Rectangling and Cleaning Market Prices
 
+This code converts market/restaurant prices into a tidy format, extracts and clean relevant variables, filters for market and restaurant related food items, and standardizes price values by converting them to numeric form and rounding them to two decimal places.
+
 ```{r}
-load("../data/imported_data/raw_food_prices.rds")
+load("../data/imported_data/raw_food_prices.RData")
 food_prices <- tibble(combined_food_prices)
 
 food_prices <- food_prices|>
@@ -26,8 +28,10 @@ food_prices <- food_prices|>
 
 ## Cleaning Income Data
 
+This code removes an unnecessary column, assigns clear and consistent column names, and cleans income related variables by removing currency formatting and converting them into numeric values.
+
 ```{r}
-load("../data/imported_data/raw_income.rds")
+load("../data/imported_data/raw_income.RData")
 income_table_cleaned <- income_table |>
   select(-1)  # Use select() to remove the first column
 
@@ -41,8 +45,10 @@ income_table_cleaned$`GDP per Capita 2020` <- as.numeric(gsub("[$,]", "", income
 
 ## Cleaning Obesity Rate Data
 
+This code removes unnecessary column, assigns column names, and cleans percentage based obesity rate variable by removing % characters and converting them into numeric values.
+
 ```{r}
-load("../data/imported_data/raw_obesity.rds")
+load("../data/imported_data/raw_obesity.RData")
 obesity_table_cleaned <- obesity_table|>
   select(-1)
 
@@ -55,12 +61,16 @@ obesity_table_cleaned$'Female Obesity Rate'<- as.numeric(gsub("[,%]", "", obesit
 
 ## Join Obesity and Income Data
 
+This code combines cleaned obesity and income data into a single dataset by matching countries that exist in both sources, enabling joint analysis of obesity rates and income related variables.
+
 ```{r}
 obesity_income <- obesity_table_cleaned|>
   inner_join(country_income, by="Country")
 ```
 
 ### Plotting the Relationship between Obesity and Income
+
+This code creates a scatter plot that visualizes the relationship between median income and obesity rate by country.
 
 ```{r}
 ggplot(obesity_income, aes(x = `Median Income 2020`, y = `Obesity Rate`)) +
@@ -75,6 +85,8 @@ ggplot(obesity_income, aes(x = `Median Income 2020`, y = `Obesity Rate`)) +
 
 ## Join Obesity and Market Price Data
 
+This code selects the relevant columns from the food_price dataset, and then merges it with the obesity_table_cleaned dataset by matching countries.
+
 ```{r}
 food_price <- food_price|>
   select(Country, average_price, item_name)
@@ -84,6 +96,8 @@ obesity_price <- obesity_table_cleaned|>
 ```
 
 ### Plotting the Relationship between Obesity and Market Affordability
+
+This code aggregates the obesity_price data by calculating the average food price and average obesity rate for each country. A scatter plot is created to visualize the relationship between these two variables.
 
 ```{r}
 country_obesity_price <- obesity_price|>
@@ -100,6 +114,8 @@ ggplot(country_obesity_price, aes(x = avg_price, y = avg_obesity)) +
 ```
 
 ## Join Obesity Rate, Income and Market Affordability
+
+This code combines obesity, market/restaurant price, and income data into a single dataset. By aligning the datasets based on a Country variable, the resulting Obesity_income_price dataset can be used to analyze how obesity rates, food prices, and income levels are related across countries.
 
 ```{r}
 obesity_income_price <- obesity_price|>

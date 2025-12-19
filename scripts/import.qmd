@@ -81,9 +81,9 @@ food_data <- map(countries$url, get_food_prices, .progress = TRUE)
 food_data_all
 ```
 
-Below is the code for retrieving Market/Restaurant prices using Numebeo API.
-
 ## Retrieve Market/Restaurant Price Data Using Numbeo API
+
+This script retrieves market and restaurant price data from the Numbeo API. A base API url is defined first, followed by a function get_food_prices(), which requests prece data for a given country. The function is applied across all countries using map(), and the results are combined into a single dataset with country identifiers.
 
 ```{r}
 base_url <- "https://www.numbeo.com/api"
@@ -106,6 +106,8 @@ head(combined_food_prices)
 
 ## Scraping Income by Countries
 
+This code scrapes countries median, mean income and GDP per capita from the World Population Review website.
+
 ```{r}
 url_2 <- "https://worldpopulationreview.com/country-rankings/median-income-by-country"
 
@@ -118,6 +120,8 @@ str(income_table)
 ```
 
 ## Scraping Obesity Data
+
+This code scrapes overall obesity rate, male obesity rate, and female obesity rate from the World Population Review website.
 
 ```{r}
 url_3 <- "https://worldpopulationreview.com/country-rankings/obesity-rates-by-country#obesity-by-country"
